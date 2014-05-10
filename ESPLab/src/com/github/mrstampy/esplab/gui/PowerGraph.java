@@ -38,12 +38,15 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Effect;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
 import org.controlsfx.control.MasterDetailPane;
 import org.controlsfx.control.RangeSlider;
@@ -81,7 +84,8 @@ public class PowerGraph extends AbstractGraph<String> {
 	/**
 	 * Instantiates a new power graph.
 	 *
-	 * @param lab the lab
+	 * @param lab
+	 *          the lab
 	 */
 	public PowerGraph(Lab lab) {
 		super();
@@ -116,8 +120,17 @@ public class PowerGraph extends AbstractGraph<String> {
 		calculateBaseline.addEventHandler(ActionEvent.ACTION, t -> calculateBaselineClicked());
 		calculateBaseline.setDisable(true);
 		clearBaseline.addEventHandler(ActionEvent.ACTION, t -> clearBaselineClicked());
+		setClearBaselineEffect();
 		displayGraph.addEventHandler(ActionEvent.ACTION, t -> displayGraphClicked());
 		displayGraph.fire();
+	}
+
+	private void setClearBaselineEffect() {
+		clearBaseline.setEffect(getLab().getBaseline() == 0 ? null : getBaselineEffect());
+	}
+
+	private Effect getBaselineEffect() {
+		return new DropShadow(10, Color.GOLD);
 	}
 
 	private void displayGraphClicked() {
@@ -127,6 +140,7 @@ public class PowerGraph extends AbstractGraph<String> {
 
 	private void clearBaselineClicked() {
 		getLab().resetBaseline();
+		setClearBaselineEffect();
 	}
 
 	private void calculateBaselineClicked() {
@@ -140,6 +154,7 @@ public class PowerGraph extends AbstractGraph<String> {
 		getLab().stopCalculateBaseline();
 		calculateBaseline.setDisable(false);
 		calculateBaseline.setText("Calculate Baseline");
+		setClearBaselineEffect();
 	}
 
 	private void initSliders() {
@@ -258,7 +273,9 @@ public class PowerGraph extends AbstractGraph<String> {
 		chart.getData().add(series);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.github.mrstampy.esplab.gui.AbstractGraph#getLayout()
 	 */
 	public Region getLayout() {
@@ -294,7 +311,8 @@ public class PowerGraph extends AbstractGraph<String> {
 	/**
 	 * Sets the lab.
 	 *
-	 * @param lab the new lab
+	 * @param lab
+	 *          the new lab
 	 */
 	public void setLab(Lab lab) {
 		this.lab = lab;
@@ -364,7 +382,9 @@ public class PowerGraph extends AbstractGraph<String> {
 		return box;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.github.mrstampy.esplab.gui.AbstractGraph#start()
 	 */
 	@Override
@@ -372,7 +392,9 @@ public class PowerGraph extends AbstractGraph<String> {
 		calculateBaseline.setDisable(false);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.github.mrstampy.esplab.gui.AbstractGraph#stop()
 	 */
 	@Override
@@ -385,7 +407,9 @@ public class PowerGraph extends AbstractGraph<String> {
 		calculateBaseline.setDisable(true);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.github.mrstampy.esplab.gui.AbstractGraph#postSetConnection()
 	 */
 	protected void postSetConnection() {
@@ -393,7 +417,9 @@ public class PowerGraph extends AbstractGraph<String> {
 		getLab().setConnection(getConnection());
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.github.mrstampy.esplab.gui.AbstractGraph#graphAccept(double[][])
 	 */
 	@Override
@@ -423,7 +449,7 @@ public class PowerGraph extends AbstractGraph<String> {
 	 * The Class GridHelper.
 	 */
 	class GridHelper {
-		
+
 		/** The height. */
 		int x, y, width, height;
 
