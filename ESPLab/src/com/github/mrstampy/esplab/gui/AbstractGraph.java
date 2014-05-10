@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) ESPLab 2014 Burton Alexander
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 51
+ * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ */
 package com.github.mrstampy.esplab.gui;
 
 import java.util.concurrent.TimeUnit;
@@ -32,29 +50,52 @@ import com.github.mrstampy.esp.multiconnectionsocket.ConnectionEvent.State;
 import com.github.mrstampy.esp.multiconnectionsocket.ConnectionEventListener;
 import com.github.mrstampy.esp.multiconnectionsocket.MultiConnectionSocketException;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class AbstractGraph.
+ *
+ * @param <XAXIS> the generic type
+ */
 public abstract class AbstractGraph<XAXIS extends Object> implements ConnectionEventListener {
 	private static final Logger log = LoggerFactory.getLogger(AbstractGraph.class);
 
 	private RawEspConnection connection;
 	private Subscription subscription;
 
+	/** The chart. */
 	protected XYChart<XAXIS, Number> chart;
+	
+	/** The series. */
 	protected Series<XAXIS, Number> series = new Series<XAXIS, Number>();
+	
+	/** The x axis. */
 	protected Axis<XAXIS> xAxis;
+	
+	/** The y axis. */
 	protected NumberAxis yAxis = new NumberAxis();
+	
+	/** The start stop. */
 	protected ToggleButton startStop;
 
+	/** The running. */
 	protected AtomicBoolean running = new AtomicBoolean(false);
 
+	/** The scheduler. */
 	protected Scheduler scheduler = Schedulers.io();
 	private rx.Subscription snap;
 
 	private AtomicBoolean errorShowing = new AtomicBoolean();
 
+	/**
+	 * Instantiates a new abstract graph.
+	 */
 	public AbstractGraph() {
 		initButtons();
 	}
 
+	/* (non-Javadoc)
+	 * @see com.github.mrstampy.esp.multiconnectionsocket.ConnectionEventListener#connectionEventPerformed(com.github.mrstampy.esp.multiconnectionsocket.ConnectionEvent)
+	 */
 	@Override
 	public void connectionEventPerformed(ConnectionEvent e) {
 		switch (e.getState()) {
@@ -77,6 +118,12 @@ public abstract class AbstractGraph<XAXIS extends Object> implements ConnectionE
 		}
 	}
 
+	/**
+	 * Tool tip.
+	 *
+	 * @param node the node
+	 * @param tip the tip
+	 */
 	protected void toolTip(Control node, String tip) {
 		node.setTooltip(new Tooltip(tip));
 	}
@@ -90,6 +137,9 @@ public abstract class AbstractGraph<XAXIS extends Object> implements ConnectionE
 		}
 	}
 
+	/**
+	 * Pre start.
+	 */
 	protected void preStart() {
 		running.set(true);
 		snap = scheduler.schedulePeriodically(a -> graphAccept(getConnection().getCurrent()), 250, 250,
@@ -100,16 +150,37 @@ public abstract class AbstractGraph<XAXIS extends Object> implements ConnectionE
 		}
 	}
 	
+	/**
+	 * Gets the layout.
+	 *
+	 * @return the layout
+	 */
 	public abstract Region getLayout();
 
+	/**
+	 * Connection error.
+	 *
+	 * @param state the state
+	 */
 	protected void connectionError(State state) {
 		showConnectionError(getLostConnectionMasthead());
 	}
 
+	/**
+	 * Start.
+	 */
 	protected abstract void start();
 
+	/**
+	 * Stop.
+	 */
 	protected abstract void stop();
 
+	/**
+	 * Gets the buttons.
+	 *
+	 * @return the buttons
+	 */
 	protected Pane getButtons() {
 		HBox box = new HBox(10);
 		box.setAlignment(Pos.CENTER);
@@ -119,16 +190,29 @@ public abstract class AbstractGraph<XAXIS extends Object> implements ConnectionE
 		return box;
 	}
 
+	/**
+	 * Gets the connection.
+	 *
+	 * @return the connection
+	 */
 	public RawEspConnection getConnection() {
 		return connection;
 	}
 
+	/**
+	 * Sets the connection.
+	 *
+	 * @param connection the new connection
+	 */
 	public void setConnection(RawEspConnection connection) {
 		preSetConnection();
 		this.connection = connection;
 		postSetConnection();
 	}
 
+	/**
+	 * Pre set connection.
+	 */
 	protected void preSetConnection() {
 		if (connection == null) return;
 
@@ -136,10 +220,18 @@ public abstract class AbstractGraph<XAXIS extends Object> implements ConnectionE
 		if (subscription != null) subscription.unsubscribe();
 	}
 
+	/**
+	 * Post set connection.
+	 */
 	protected void postSetConnection() {
 		getConnection().addConnectionEventListener(this);
 	}
 
+	/**
+	 * Graph accept.
+	 *
+	 * @param samples the samples
+	 */
 	protected abstract void graphAccept(double[][] samples);
 
 	private void initButtons() {
@@ -149,6 +241,9 @@ public abstract class AbstractGraph<XAXIS extends Object> implements ConnectionE
 		toolTip(startStop, "Start / stop the ESP device");
 	}
 
+	/**
+	 * Start stop.
+	 */
 	protected void startStop() {
 		if (startStop.isSelected()) {
 			startButtonClicked();
@@ -173,6 +268,11 @@ public abstract class AbstractGraph<XAXIS extends Object> implements ConnectionE
 		}
 	}
 
+	/**
+	 * Show connection error.
+	 *
+	 * @param masthead the masthead
+	 */
 	protected void showConnectionError(final String masthead) {
 		if (errorShowing.get()) return;
 

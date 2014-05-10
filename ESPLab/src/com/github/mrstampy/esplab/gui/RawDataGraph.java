@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) ESPLab 2014 Burton Alexander
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 51
+ * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ */
 package com.github.mrstampy.esplab.gui;
 
 import java.util.ArrayList;
@@ -21,6 +39,10 @@ import org.controlsfx.control.MasterDetailPane;
 
 import rx.Observable;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class RawDataGraph.
+ */
 public class RawDataGraph extends AbstractGraph<Number> {
 	private static final int MAX_X = 100;
 
@@ -30,11 +52,17 @@ public class RawDataGraph extends AbstractGraph<Number> {
 	private AtomicInteger xPos = new AtomicInteger();
 	private ArrayBlockingQueue<Double> queue = new ArrayBlockingQueue<>(10000);
 
+	/**
+	 * Instantiates a new raw data graph.
+	 */
 	public RawDataGraph() {
 		super();
 		initChart();
 	}
 
+	/* (non-Javadoc)
+	 * @see com.github.mrstampy.esplab.gui.AbstractGraph#getLayout()
+	 */
 	public Region getLayout() {
 		MasterDetailPane pane = new MasterDetailPane(Side.BOTTOM);
 		pane.setMinWidth(1000);
@@ -48,6 +76,9 @@ public class RawDataGraph extends AbstractGraph<Number> {
 		return pane;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.github.mrstampy.esplab.gui.AbstractGraph#graphAccept(double[][])
+	 */
 	protected void graphAccept(double[][] t) {
 		if (!running.get() || t.length == 0) return;
 
@@ -60,6 +91,9 @@ public class RawDataGraph extends AbstractGraph<Number> {
 		counter.getAndIncrement();
 	}
 
+	/* (non-Javadoc)
+	 * @see com.github.mrstampy.esplab.gui.AbstractGraph#start()
+	 */
 	protected void start() {
 		counter.set(0);
 		queue.clear();
@@ -68,6 +102,9 @@ public class RawDataGraph extends AbstractGraph<Number> {
 		timer.start();
 	}
 
+	/* (non-Javadoc)
+	 * @see com.github.mrstampy.esplab.gui.AbstractGraph#stop()
+	 */
 	protected void stop() {
 		timer.stop();
 	}

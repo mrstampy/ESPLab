@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) ESPLab 2014 Burton Alexander
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 51
+ * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ */
 package com.github.mrstampy.esplab.gui;
 
 import java.util.Arrays;
@@ -38,6 +56,10 @@ import com.github.mrstampy.esp.dsp.lab.Lab;
 import com.github.mrstampy.esp.dsp.lab.PassFilter;
 import com.sun.javafx.collections.ObservableListWrapper;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class PowerGraph.
+ */
 public class PowerGraph extends AbstractGraph<String> {
 
 	private ComboBox<FFTType> fftType = new ComboBox<FFTType>();
@@ -56,6 +78,11 @@ public class PowerGraph extends AbstractGraph<String> {
 
 	private AtomicBoolean graphing = new AtomicBoolean(true);
 
+	/**
+	 * Instantiates a new power graph.
+	 *
+	 * @param lab the lab
+	 */
 	public PowerGraph(Lab lab) {
 		super();
 		setLab(lab);
@@ -231,6 +258,9 @@ public class PowerGraph extends AbstractGraph<String> {
 		chart.getData().add(series);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.github.mrstampy.esplab.gui.AbstractGraph#getLayout()
+	 */
 	public Region getLayout() {
 		MasterDetailPane pane = new MasterDetailPane(Side.BOTTOM);
 		pane.setMinWidth(1000);
@@ -252,10 +282,20 @@ public class PowerGraph extends AbstractGraph<String> {
 		return pane;
 	}
 
+	/**
+	 * Gets the lab.
+	 *
+	 * @return the lab
+	 */
 	public Lab getLab() {
 		return lab;
 	}
 
+	/**
+	 * Sets the lab.
+	 *
+	 * @param lab the new lab
+	 */
 	public void setLab(Lab lab) {
 		this.lab = lab;
 		setConnection(lab.getConnection());
@@ -324,11 +364,17 @@ public class PowerGraph extends AbstractGraph<String> {
 		return box;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.github.mrstampy.esplab.gui.AbstractGraph#start()
+	 */
 	@Override
 	protected void start() {
 		calculateBaseline.setDisable(false);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.github.mrstampy.esplab.gui.AbstractGraph#stop()
+	 */
 	@Override
 	protected void stop() {
 		Observable.timer(50, TimeUnit.MILLISECONDS).subscribe(a -> reset());
@@ -339,11 +385,17 @@ public class PowerGraph extends AbstractGraph<String> {
 		calculateBaseline.setDisable(true);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.github.mrstampy.esplab.gui.AbstractGraph#postSetConnection()
+	 */
 	protected void postSetConnection() {
 		super.postSetConnection();
 		getLab().setConnection(getConnection());
 	}
 
+	/* (non-Javadoc)
+	 * @see com.github.mrstampy.esplab.gui.AbstractGraph#graphAccept(double[][])
+	 */
 	@Override
 	protected void graphAccept(double[][] samples) {
 		Observable.just(samples).subscribe(t1 -> getLab().process(t1));
@@ -367,27 +419,47 @@ public class PowerGraph extends AbstractGraph<String> {
 		}
 	}
 
+	/**
+	 * The Class GridHelper.
+	 */
 	class GridHelper {
+		
+		/** The height. */
 		int x, y, width, height;
 
+		/**
+		 * Instantiates a new grid helper.
+		 */
 		GridHelper() {
 			width = 1;
 			height = 1;
 		}
 
+		/**
+		 * Incr x.
+		 */
 		void incrX() {
 			x++;
 		}
 
+		/**
+		 * Incr y.
+		 */
 		void incrY() {
 			y++;
 		}
 
+		/**
+		 * New line.
+		 */
 		void newLine() {
 			incrY();
 			x = 0;
 		}
 
+		/**
+		 * Reset wh.
+		 */
 		void resetWH() {
 			width = 1;
 			height = 1;
