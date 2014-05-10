@@ -1,0 +1,8 @@
+/bin
+/build
+/.settings
+/controls.lib
+/lib
+/.classpath
+/.project
+/.DS_Store

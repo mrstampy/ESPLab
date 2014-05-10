@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<ivy-module version="2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd"
+	   xmlns:m="http://ant.apache.org/ivy/maven">
+       
+	<info organisation="com.github.mrstampy" module="esplab" status="integration" />
+	    
+    <publications>
+        <artifact name="esplab"/>
+        <artifact name="esplab" type="pom" ext="pom" />
+        <artifact name="esplab" type="javadoc" m:classifier="javadoc" ext="jar" />
+        <artifact name="esplab" type="sources" m:classifier="sources" ext="jar" />
+    </publications>
+	
+	<dependencies>
+		<dependency org="org.reactfx" name="reactfx" rev="1.0.0"/>
+		
+		<dependency org="org.slf4j" name="slf4j-api" rev="1.7.7"/>
+		<dependency org="ch.qos.logback" name="logback-classic" rev="1.1.2" transitive="false" />
+		<dependency org="ch.qos.logback" name="logback-core" rev="1.1.2" transitive="false" />
+		<dependency org="com.github.mrstampy" name="esp-nia" rev="2.1-SNAPSHOT" />
+		<dependency org="com.github.mrstampy" name="esp-thinkgear" rev="2.1-SNAPSHOT" />
+		<dependency org="org.controlsfx" name="controlsfx" rev="8.0.5"/>
+	</dependencies>
+	
+</ivy-module>
