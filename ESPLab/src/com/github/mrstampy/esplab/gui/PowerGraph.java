@@ -38,6 +38,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Effect;
 import javafx.scene.layout.GridPane;
@@ -76,6 +78,11 @@ public class PowerGraph extends AbstractGraph<String> {
 	private CheckBox absoluteValues = new CheckBox("Absolute Values");
 
 	private RangeSlider bandPassSlider = new RangeSlider(1, 40, 1, 40);
+	private Slider highPassFactor = new Slider(1, 50, 1);
+	private Slider lowPassFactor = new Slider(1, 50, 1);
+
+	private TextField lowVal = new TextField();
+	private TextField highVal = new TextField();
 
 	private Lab lab;
 
@@ -114,6 +121,8 @@ public class PowerGraph extends AbstractGraph<String> {
 		toolTip(absoluteValues, "Use absolute values");
 		toolTip(bandPassSlider, "Select the value or range for the pass filters");
 		toolTip(normalizeSignal, "Normalize the input signal");
+		toolTip(highPassFactor, "High pass factor");
+		toolTip(lowPassFactor, "Low pass factor");
 	}
 
 	private void initButtons() {
@@ -159,17 +168,53 @@ public class PowerGraph extends AbstractGraph<String> {
 
 	private void initSliders() {
 		initSlider(bandPassSlider);
+		initSlider(highPassFactor);
+		initSlider(lowPassFactor);
 
 		bandPassSlider.lowValueProperty().addListener((o, old, newVal) -> lowBandPassValueChanged(newVal.doubleValue()));
 		bandPassSlider.highValueProperty().addListener((o, old, newVal) -> highBandPassValueChanged(newVal.doubleValue()));
+
+		highPassFactor.valueProperty().addListener((o, old, newVal) -> highFactorChanged(newVal.doubleValue()));
+		lowPassFactor.valueProperty().addListener((o, old, newVal) -> lowFactorChanged(newVal.doubleValue()));
+
+		lowVal.setMaxWidth(50);
+		lowVal.setEditable(false);
+		highVal.setMaxWidth(50);
+		highVal.setEditable(false);
+
+		bandPassSlider.setLowValue(getLab().getLowPassFrequency());
+		lowVal.setText(Double.toString(getLab().getLowPassFrequency()));
+
+		double high = getLab().getHighPassFrequency() > bandPassSlider.getMax() ? bandPassSlider.getMax() : getLab()
+				.getHighPassFrequency();
+		bandPassSlider.setHighValue(high);
+		highVal.setText(Double.toString(high));
+		highPassFactor.setValue(getLab().getHighPassFilterFactor());
+		lowPassFactor.setValue(getLab().getLowPassFilterFactor());
+	}
+
+	private void lowFactorChanged(double d) {
+		getLab().setLowPassFilterFactor(d);
+	}
+
+	private void highFactorChanged(double d) {
+		getLab().setHighPassFilterFactor(d);
+	}
+
+	private void initSlider(Slider slider) {
+		slider.setShowTickLabels(false);
+		slider.setShowTickMarks(false);
+		slider.setMinWidth(500);
 	}
 
 	private void highBandPassValueChanged(double val) {
 		getLab().setHighPassFrequency(val);
+		highVal.setText(Double.toString(val));
 	}
 
 	private void lowBandPassValueChanged(double val) {
 		getLab().setLowPassFrequency(val);
+		lowVal.setText(Double.toString(val));
 	}
 
 	private void initSlider(RangeSlider slider) {
@@ -236,9 +281,27 @@ public class PowerGraph extends AbstractGraph<String> {
 	}
 
 	private void setBandPassSliderEnabled() {
-		boolean disable = filters.getValue() == PassFilter.no_pass_filter;
-		bandPassSlider.setDisable(disable);
-		bandPassSlider.setOpacity(disable ? 0.5 : 1);
+		PassFilter filter = filters.getValue();
+
+		boolean disable = filter == PassFilter.no_pass_filter;
+		boolean disLow = filter == PassFilter.high_pass || disable;
+		boolean disHigh = filter == PassFilter.low_pass || disable;
+
+		setSliderEnabled(bandPassSlider, disable, disable ? 0.5 : 1);
+		setSliderEnabled(highPassFactor, disHigh, disHigh ? 0.5 : 1);
+		setSliderEnabled(lowPassFactor, disLow, disLow ? 0.5 : 1);
+		setTextBackground(lowVal, disHigh);
+		setTextBackground(highVal, disLow);
+	}
+	
+	private void setTextBackground(TextField field, boolean disable) {
+		String s = disable ? "white" : "lightblue";
+		field.setStyle("-fx-background-color: " + s);
+	}
+
+	private void setSliderEnabled(Node node, boolean disable, double opacity) {
+		node.setDisable(disable);
+		node.setOpacity(opacity);
 	}
 
 	private void setAbsoluteEnabled() {
@@ -360,26 +423,33 @@ public class PowerGraph extends AbstractGraph<String> {
 		gridify(gh, lbl, HPos.CENTER, VPos.CENTER);
 
 		gh.newLine();
-		HBox bp = getBandPassSlider();
+		HBox bp = getBandPassBox();
 		gridify(gh, bp, HPos.CENTER, VPos.CENTER);
+
+		gh.newLine();
+		gridify(gh, highPassFactor, HPos.CENTER, VPos.CENTER);
+
+		gh.newLine();
+		gridify(gh, lowPassFactor, HPos.CENTER, VPos.CENTER);
 
 		gp.setAlignment(Pos.CENTER);
 		gp.getChildren().addAll(fft, fftType, displayGraph, wf, functions, pf, filters, absoluteValues, lbl, bp,
-				normalizeSignal, normalizeFft);
+				normalizeSignal, normalizeFft, highPassFactor, lowPassFactor);
 
 		return gp;
+	}
+
+	private HBox getBandPassBox() {
+		HBox box = new HBox(10);
+
+		box.getChildren().addAll(lowVal, bandPassSlider, highVal);
+
+		return box;
 	}
 
 	private void gridify(GridHelper gh, Node node, HPos hPos, VPos vPos) {
 		GridPane.setConstraints(node, gh.x, gh.y, gh.width, gh.height, hPos, vPos, Priority.NEVER, Priority.NEVER,
 				new Insets(5));
-	}
-
-	private HBox getBandPassSlider() {
-		HBox box = new HBox(10);
-		box.getChildren().addAll(bandPassSlider);
-
-		return box;
 	}
 
 	/*
