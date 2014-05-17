@@ -42,6 +42,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import rx.Scheduler;
+import rx.Scheduler.Inner;
+import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 import com.github.mrstampy.esp.dsp.lab.RawEspConnection;
@@ -54,7 +56,8 @@ import com.github.mrstampy.esp.multiconnectionsocket.MultiConnectionSocketExcept
 /**
  * The Class AbstractGraph.
  *
- * @param <XAXIS> the generic type
+ * @param <XAXIS>
+ *          the generic type
  */
 public abstract class AbstractGraph<XAXIS extends Object> implements ConnectionEventListener {
 	private static final Logger log = LoggerFactory.getLogger(AbstractGraph.class);
@@ -64,16 +67,16 @@ public abstract class AbstractGraph<XAXIS extends Object> implements ConnectionE
 
 	/** The chart. */
 	protected XYChart<XAXIS, Number> chart;
-	
+
 	/** The series. */
 	protected Series<XAXIS, Number> series = new Series<XAXIS, Number>();
-	
+
 	/** The x axis. */
 	protected Axis<XAXIS> xAxis;
-	
+
 	/** The y axis. */
 	protected NumberAxis yAxis = new NumberAxis();
-	
+
 	/** The start stop. */
 	protected ToggleButton startStop;
 
@@ -93,8 +96,12 @@ public abstract class AbstractGraph<XAXIS extends Object> implements ConnectionE
 		initButtons();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.github.mrstampy.esp.multiconnectionsocket.ConnectionEventListener#connectionEventPerformed(com.github.mrstampy.esp.multiconnectionsocket.ConnectionEvent)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.github.mrstampy.esp.multiconnectionsocket.ConnectionEventListener#
+	 * connectionEventPerformed
+	 * (com.github.mrstampy.esp.multiconnectionsocket.ConnectionEvent)
 	 */
 	@Override
 	public void connectionEventPerformed(ConnectionEvent e) {
@@ -121,8 +128,10 @@ public abstract class AbstractGraph<XAXIS extends Object> implements ConnectionE
 	/**
 	 * Tool tip.
 	 *
-	 * @param node the node
-	 * @param tip the tip
+	 * @param node
+	 *          the node
+	 * @param tip
+	 *          the tip
 	 */
 	protected void toolTip(Control node, String tip) {
 		node.setTooltip(new Tooltip(tip));
@@ -131,7 +140,7 @@ public abstract class AbstractGraph<XAXIS extends Object> implements ConnectionE
 	private void preStop() {
 		running.set(false);
 		if (snap != null) snap.unsubscribe();
-		if(startStop.isSelected()) {
+		if (startStop.isSelected()) {
 			startStop.setSelected(false);
 			startStop.setText("Start");
 		}
@@ -142,14 +151,24 @@ public abstract class AbstractGraph<XAXIS extends Object> implements ConnectionE
 	 */
 	protected void preStart() {
 		running.set(true);
-		snap = scheduler.schedulePeriodically(a -> graphAccept(getConnection().getCurrent()), 250, 250,
-				TimeUnit.MILLISECONDS);
-		if(! startStop.isSelected()) {
+		snap = scheduler.schedulePeriodically(new Action1<Scheduler.Inner>() {
+
+			@Override
+			public void call(Inner t1) {
+				try {
+					graphAccept(getConnection().getCurrent());
+				} catch(Throwable e) {
+					log.error("Unexpected exception", e);
+				}
+			}
+		}, 250, 250, TimeUnit.MILLISECONDS);
+
+		if (!startStop.isSelected()) {
 			startStop.setSelected(true);
 			startStop.setText("Stop");
 		}
 	}
-	
+
 	/**
 	 * Gets the layout.
 	 *
@@ -160,7 +179,8 @@ public abstract class AbstractGraph<XAXIS extends Object> implements ConnectionE
 	/**
 	 * Connection error.
 	 *
-	 * @param state the state
+	 * @param state
+	 *          the state
 	 */
 	protected void connectionError(State state) {
 		showConnectionError(getLostConnectionMasthead());
@@ -202,7 +222,8 @@ public abstract class AbstractGraph<XAXIS extends Object> implements ConnectionE
 	/**
 	 * Sets the connection.
 	 *
-	 * @param connection the new connection
+	 * @param connection
+	 *          the new connection
 	 */
 	public void setConnection(RawEspConnection connection) {
 		preSetConnection();
@@ -225,12 +246,14 @@ public abstract class AbstractGraph<XAXIS extends Object> implements ConnectionE
 	 */
 	protected void postSetConnection() {
 		getConnection().addConnectionEventListener(this);
+		if (getConnection().isConnected()) preStart();
 	}
 
 	/**
 	 * Graph accept.
 	 *
-	 * @param samples the samples
+	 * @param samples
+	 *          the samples
 	 */
 	protected abstract void graphAccept(double[][] samples);
 
@@ -253,7 +276,7 @@ public abstract class AbstractGraph<XAXIS extends Object> implements ConnectionE
 	}
 
 	private void stopButtonClicked() {
-		getConnection().stop();
+		if(getConnection().isConnected()) getConnection().stop();
 		startStop.setText("Start");
 		if (startStop.isSelected()) startStop.setSelected(false);
 	}
@@ -271,7 +294,8 @@ public abstract class AbstractGraph<XAXIS extends Object> implements ConnectionE
 	/**
 	 * Show connection error.
 	 *
-	 * @param masthead the masthead
+	 * @param masthead
+	 *          the masthead
 	 */
 	protected void showConnectionError(final String masthead) {
 		if (errorShowing.get()) return;

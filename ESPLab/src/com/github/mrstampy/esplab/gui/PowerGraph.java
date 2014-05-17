@@ -228,10 +228,13 @@ public class PowerGraph extends AbstractGraph<String> {
 
 	private void initCheckboxes() {
 		normalizeFft.addEventHandler(ActionEvent.ACTION, t -> normalizeFftSelected());
+		normalizeFft.setSelected(getLab().isNormalizeFft());
 
 		normalizeSignal.addEventHandler(ActionEvent.ACTION, t -> normalizeSignalSelected());
+		normalizeSignal.setSelected(getLab().isNormalizeSignal());
 
 		absoluteValues.addEventHandler(ActionEvent.ACTION, t -> absoluteValuesSelected());
+		absoluteValues.setSelected(getLab().isAbsoluteValues());
 	}
 
 	private void absoluteValuesSelected() {
