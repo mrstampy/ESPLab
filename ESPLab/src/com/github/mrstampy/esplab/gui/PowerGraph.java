@@ -127,7 +127,7 @@ public class PowerGraph extends AbstractGraph<String> {
 
 	private void initButtons() {
 		calculateBaseline.addEventHandler(ActionEvent.ACTION, t -> calculateBaselineClicked());
-		calculateBaseline.setDisable(true);
+		calculateBaseline.setDisable(getConnection() == null || !getConnection().isConnected());
 		clearBaseline.addEventHandler(ActionEvent.ACTION, t -> clearBaselineClicked());
 		setClearBaselineEffect();
 		displayGraph.addEventHandler(ActionEvent.ACTION, t -> displayGraphClicked());
