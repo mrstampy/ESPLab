@@ -486,6 +486,7 @@ public class PowerGraph extends AbstractGraph<String> {
 	 * @see com.github.mrstampy.esplab.gui.AbstractGraph#postSetConnection()
 	 */
 	protected void postSetConnection() {
+		if(getConnection() == null) return;
 		super.postSetConnection();
 		getLab().setConnection(getConnection());
 	}

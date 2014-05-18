@@ -245,6 +245,7 @@ public abstract class AbstractGraph<XAXIS extends Object> implements ConnectionE
 	 * Post set connection.
 	 */
 	protected void postSetConnection() {
+		if(connection == null) return;
 		getConnection().addConnectionEventListener(this);
 		if (getConnection().isConnected()) {
 			preStart();
