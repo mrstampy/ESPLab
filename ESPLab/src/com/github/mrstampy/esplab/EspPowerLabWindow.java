@@ -21,6 +21,7 @@ public class EspPowerLabWindow extends Stage {
 
 	public void close() {
 		graph.getConnection().removeConnectionEventListener(graph);
+		graph.setConnection(null);
 		super.close();
 	}
 }
