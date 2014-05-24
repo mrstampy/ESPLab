@@ -15,8 +15,12 @@ public class EspPowerLabWindow extends Stage {
 		super();
 		graph = new PowerGraph(lab);
 		setScene(new Scene(graph.getLayout()));
-		setTitle(lab.getConnection().getName() + " Laboratory");
+		setTitle(lab.getConnection().getName() + " Laboratory" + getChannelText(lab));
 		addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, e -> close());
+	}
+
+	private String getChannelText(Lab lab) {
+		return ", " + lab.getConnection().getChannel(lab.getChannel()).getDescription();
 	}
 
 	public void close() {
