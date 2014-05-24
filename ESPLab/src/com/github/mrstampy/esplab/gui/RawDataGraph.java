@@ -159,4 +159,9 @@ public class RawDataGraph extends AbstractGraph<Number> {
 		na.setLowerBound(x - MAX_X);
 		na.setUpperBound(x);
 	}
+
+	@Override
+	protected int getChannel() {
+		return 1;
+	}
 }

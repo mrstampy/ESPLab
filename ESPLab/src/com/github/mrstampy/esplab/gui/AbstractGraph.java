@@ -156,7 +156,7 @@ public abstract class AbstractGraph<XAXIS extends Object> implements ConnectionE
 			@Override
 			public void call(Inner t1) {
 				try {
-					graphAccept(getConnection().getCurrent());
+					graphAccept(getConnection().getCurrentFor(getChannel()));
 				} catch(Throwable e) {
 					log.error("Unexpected exception", e);
 				}
@@ -168,6 +168,8 @@ public abstract class AbstractGraph<XAXIS extends Object> implements ConnectionE
 			startStop.setText("Stop");
 		}
 	}
+
+	protected abstract int getChannel();
 
 	/**
 	 * Gets the layout.

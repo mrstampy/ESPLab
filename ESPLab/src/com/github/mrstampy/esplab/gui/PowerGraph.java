@@ -374,6 +374,11 @@ public class PowerGraph extends AbstractGraph<String> {
 		return lab;
 	}
 
+	@Override
+	protected int getChannel() {
+		return getLab().getChannel();
+	}
+
 	/**
 	 * Sets the lab.
 	 *
