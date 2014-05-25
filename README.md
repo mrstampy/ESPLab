@@ -4,8 +4,8 @@ This library provides classes to visualize and control the [Lab interface](https
 
 ## Maven Dependency
 
-  <dependency>
-       <groupId>com.github.mrstampy</groupId>
-       <artifactId>esplab</artifactId>
-       <version>1.0</version>
-  </dependency>
+    <dependency>
+         <groupId>com.github.mrstampy</groupId>
+         <artifactId>esplab</artifactId>
+         <version>1.0</version>
+    </dependency>
